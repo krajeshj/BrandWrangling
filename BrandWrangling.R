@@ -56,16 +56,38 @@ dim(brand)
 brand$company <- tolower(brand$company)
 
 factor(brand$company)
-# Clean up the 'company' column, so all of the misspellings of the brand names are standardized.
-#For example, you can transform the values in the column to be: philips, akzo, van houten and unilever (all lowercase).
+ 
+# Use an explicit for loop when each iteration is a non-trivial task. But a simple
+# loop can be more clearly and compactly expressed using an apply function.
+# There is at least one exception to this rule. We will see in Circle 8.1.56 that
+# if the result will be a list and some of the components can be NULL, then a for loop may skip 
+# give a wrong output# her we decided to use lapply
 
-brand$company <- gsub(regex("^[fp]+[hilp]*s$"), "philips", brand$company);
-brand$company <- gsub(regex("^a[zk ]*[o0]+$"), "azko", brand$company);
-brand$company <- gsub(regex("^van\\s+[phils\\houten]+"), "van houten", brand$company);
-brand$company <- gsub(regex("^u.+er$"), "unilever", brand$company)
+fn_clean_company_names <- function(x) { 
+  
+ if( grepl(regex("^[fp]+[hilp]*s$"), x         ))  { x <- "philips"}
+ else if( grepl(regex("^a[zk ]*[o0]+$" ),          x))  { x <- "akzo"}
+ else if( grepl(regex("^van\\s+[phils\\houten]+"), x))  { x <- "van houten"} 
+ else if( grepl(regex("^u.+er$"),                  x))  { x <- "unilever"}
+ return(x)
+ 
+}
 
+brand$company <- sapply(brand$company,fn_clean_company_names)
 
- View(brand)
+#Anirban wrote 
+
+# #My suggestion is, i) for-loop and ii) conditional loop is enough. Function is not required as such. You can try the below code:
+#   
+#   for (i in 1:nrow(brand))
+#   {
+#     if(grepl("^[P|p|p|f]+", brand$company[i]) == TRUE) {brand$company[i] <- "philips"}
+#     else if(grepl("^[A|a]+", brand$company[i]) == TRUE) {brand$company[i] <- "akzo"}
+#     else if (grepl("^[Va|va]+", brand$company[i]) == TRUE) {brand$company[i] <- "van houten"}
+#     else {brand$company[i] <- "unilever"}
+#   }
+
+str(brand)
  
  # 2: Separate product code and number
  # Separate the product code and product number into separate columns i.e. add two new columns called product_code and product_number, containing the product code and number respectively
