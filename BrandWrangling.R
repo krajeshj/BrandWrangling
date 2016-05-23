@@ -65,16 +65,27 @@ factor(brand$company)
 
 fn_clean_company_names <- function(x) { 
   
- if( grepl(regex("^[fp]+[hilp]*s$"), x))           { x <- "philips"}
- if( grepl(regex("^a[zk ]*[o0]+$" ), x))           { x <- "akzo"}
- if( grepl(regex("^van\\s+[phils\\houten]+"), x))  { x <- "van houten"} 
- if( grepl(regex("^u.+er$"), x)                 )  { x <- "unilever"}
+ if( grepl(regex("^[fp]+[hilp]*s$"), x         ))  { x <- "philips"}
+ else if( grepl(regex("^a[zk ]*[o0]+$" ),          x))  { x <- "akzo"}
+ else if( grepl(regex("^van\\s+[phils\\houten]+"), x))  { x <- "van houten"} 
+ else if( grepl(regex("^u.+er$"),                  x))  { x <- "unilever"}
  return(x)
+ 
 }
 
-brand$company <- lapply(brand$company,fn_clean_company_names)
+brand$company <- sapply(brand$company,fn_clean_company_names)
 
-View(brand)
+#Anirban wrote 
+
+# #My suggestion is, i) for-loop and ii) conditional loop is enough. Function is not required as such. You can try the below code:
+#   
+#   for (i in 1:nrow(brand))
+#   {
+#     if(grepl("^[P|p|p|f]+", brand$company[i]) == TRUE) {brand$company[i] <- "philips"}
+#     else if(grepl("^[A|a]+", brand$company[i]) == TRUE) {brand$company[i] <- "akzo"}
+#     else if (grepl("^[Va|va]+", brand$company[i]) == TRUE) {brand$company[i] <- "van houten"}
+#     else {brand$company[i] <- "unilever"}
+#   }
 
 str(brand)
  
