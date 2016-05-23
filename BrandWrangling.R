@@ -56,16 +56,27 @@ dim(brand)
 brand$company <- tolower(brand$company)
 
 factor(brand$company)
-# Clean up the 'company' column, so all of the misspellings of the brand names are standardized.
-#For example, you can transform the values in the column to be: philips, akzo, van houten and unilever (all lowercase).
+ 
+# Use an explicit for loop when each iteration is a non-trivial task. But a simple
+# loop can be more clearly and compactly expressed using an apply function.
+# There is at least one exception to this rule. We will see in Circle 8.1.56 that
+# if the result will be a list and some of the components can be NULL, then a for loop may skip 
+# give a wrong output# her we decided to use lapply
 
-brand$company <- gsub(regex("^[fp]+[hilp]*s$"), "philips", brand$company);
-brand$company <- gsub(regex("^a[zk ]*[o0]+$"), "azko", brand$company);
-brand$company <- gsub(regex("^van\\s+[phils\\houten]+"), "van houten", brand$company);
-brand$company <- gsub(regex("^u.+er$"), "unilever", brand$company)
+fn_clean_company_names <- function(x) { 
+  
+ if( grepl(regex("^[fp]+[hilp]*s$"), x))           { x <- "philips"}
+ if( grepl(regex("^a[zk ]*[o0]+$" ), x))           { x <- "akzo"}
+ if( grepl(regex("^van\\s+[phils\\houten]+"), x))  { x <- "van houten"} 
+ if( grepl(regex("^u.+er$"), x)                 )  { x <- "unilever"}
+ return(x)
+}
 
+brand$company <- lapply(brand$company,fn_clean_company_names)
 
- View(brand)
+View(brand)
+
+str(brand)
  
  # 2: Separate product code and number
  # Separate the product code and product number into separate columns i.e. add two new columns called product_code and product_number, containing the product code and number respectively
